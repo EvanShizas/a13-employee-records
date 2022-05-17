@@ -11,7 +11,6 @@
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,11 +19,18 @@ import javax.swing.JSpinner;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.util.ArrayList;
 import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SpinnerDateModel;
+import java.util.Date;
+import java.util.Calendar;
+import java.awt.GridBagLayout;
+import javax.swing.*;
 
 public class Employee extends JFrame {
 
@@ -32,16 +38,27 @@ public class Employee extends JFrame {
 	private JTextField firstNameIn;
 	private JTextField lastNameIn;
 	private JTextField dialogBox;
-	private JTextArea listStudentGradesBox;
-	private JScrollPane scrollListStudentGradesBox;
+	private JTextArea listEmployeeRecordsBox;
+	private JScrollPane scrollListEmployeeRecordsBox;
 	private JSpinner employeeIDNumber;
+	private JSpinner startDateIn;
 	private JTextField annualSalaryIn;
-	private JTextField startDateIn;
 	private JButton add;
 	private JButton remove;
 	private JButton reset;
 	private JButton update;
 	private JButton sort;
+	private JSpinner.DateEditor dateEdit;
+	
+	ArrayList <String> employeeRecordsData = new ArrayList <String>();
+	
+	String firstLastName, employeeID, annualSalary, startDate;
+	
+	int errorCode = 0;
+	
+	boolean allowDebug = false;
+	
+	Date today = new Date();
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -102,17 +119,29 @@ public class Employee extends JFrame {
 		enterBelowLabel.setBounds(10, 92, 178, 20);
 		contentPane.add(enterBelowLabel);
 		
+		JLabel dateStructureLbl = new JLabel("mm/dd/yyyy");
+		dateStructureLbl.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		dateStructureLbl.setHorizontalAlignment(SwingConstants.LEFT);
+		dateStructureLbl.setBackground(Color.WHITE);
+		dateStructureLbl.setBounds(88, 170, 144, 22);
+		contentPane.add(dateStructureLbl);
+		
 		annualSalaryIn = new JTextField();
-		annualSalaryIn.setHorizontalAlignment(SwingConstants.RIGHT);
+		annualSalaryIn.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		annualSalaryIn.setHorizontalAlignment(SwingConstants.LEFT);
 		annualSalaryIn.setBounds(88, 119, 144, 22);
 		contentPane.add(annualSalaryIn);
 		annualSalaryIn.setColumns(10);
 
-		startDateIn = new JTextField();
-		startDateIn.setHorizontalAlignment(SwingConstants.RIGHT);
-		startDateIn.setColumns(10);
+		startDateIn = new JSpinner();
+		startDateIn.setModel(new SpinnerDateModel(today, null, today, Calendar.MONTH));
+		startDateIn.setForeground(Color.WHITE);
+		startDateIn.setBackground(Color.WHITE);
 		startDateIn.setBounds(88, 152, 144, 22);
 		contentPane.add(startDateIn);
+		
+		dateEdit = new JSpinner.DateEditor(startDateIn, "MM/dd/yyyy");
+		startDateIn.setEditor(dateEdit);
 		
 		firstNameIn = new JTextField();
 		firstNameIn.setBounds(88, 55, 144, 22);
@@ -125,7 +154,7 @@ public class Employee extends JFrame {
 		lastNameIn.setColumns(10);
 
 		employeeIDNumber = new JSpinner();
-		employeeIDNumber.setModel(new SpinnerNumberModel(0, 0, 0, 1));
+		employeeIDNumber.setModel(new SpinnerNumberModel(0, 0, 10, 1));
 		employeeIDNumber.setForeground(Color.WHITE);
 		employeeIDNumber.setBackground(Color.WHITE);
 		employeeIDNumber.setBounds(334, 88, 144, 20);
@@ -180,6 +209,7 @@ public class Employee extends JFrame {
 		});
 
 		dialogBox = new JTextField();
+		dialogBox.setText("#########");
 		dialogBox.setFont(new Font("Courier New", Font.BOLD | Font.ITALIC, 12));
 		dialogBox.setEditable(false);
 		dialogBox.setBackground(Color.WHITE);
@@ -187,36 +217,49 @@ public class Employee extends JFrame {
 		contentPane.add(dialogBox);
 		dialogBox.setColumns(10);
 
-		listStudentGradesBox = new JTextArea();
-		listStudentGradesBox.setLineWrap(true);
-		listStudentGradesBox.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		listStudentGradesBox.setEditable(false);
-		contentPane.add(listStudentGradesBox);
+		listEmployeeRecordsBox = new JTextArea();
+		listEmployeeRecordsBox.setText("Employee Name: #########\r\nEmployee #: #########\r\n\r\nAnnual Salary: #########\r\nStart Date: #########\r\n----------------------------------------------------------------------------------------\r\nEmployee Name: #########\r\nEmployee #: #########\r\n\r\nAnnual Salary: #########\r\nStart Date: #########\r\n----------------------------------------------------------------------------------------");
+		listEmployeeRecordsBox.setLineWrap(true);
+		listEmployeeRecordsBox.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		listEmployeeRecordsBox.setEditable(false);
+		contentPane.add(listEmployeeRecordsBox);
 
-		scrollListStudentGradesBox = new JScrollPane(listStudentGradesBox);
-		scrollListStudentGradesBox.setBounds(10, 286, 468, 354);
-		scrollListStudentGradesBox.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		contentPane.add(scrollListStudentGradesBox);
+		scrollListEmployeeRecordsBox = new JScrollPane(listEmployeeRecordsBox);
+		scrollListEmployeeRecordsBox.setBounds(10, 286, 468, 354);
+		scrollListEmployeeRecordsBox.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		contentPane.add(scrollListEmployeeRecordsBox);
+		
+		debugConsole();
 	}
 	
 	private void resetActionPerformed(java.awt.event.ActionEvent evt) {
+		int confirmOption = JOptionPane.showConfirmDialog (null, "All data will be lost!\n\nWish to continue?","RESET WARNING", JOptionPane.YES_NO_OPTION);
+
+		if (confirmOption == JOptionPane.YES_OPTION) {
+			employeeRecordsData.clear();
+		}
 		
+		debugConsole();
 	}
 	
 	private void addActionPerformed(java.awt.event.ActionEvent evt) {
 		
+		debugConsole();
 	}
 	
 	private void removeActionPerformed(java.awt.event.ActionEvent evt) {
 		
+		debugConsole();
 	}
 	
 	private void updateActionPerformed(java.awt.event.ActionEvent evt) {
 		
+		debugConsole();
 	}
 	
 	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
 		
+		debugConsole();
 	}
 	
 	public boolean validInput() {
@@ -236,12 +279,36 @@ public class Employee extends JFrame {
 	}
 	
 	public void debugConsole() {
-		
+		if (allowDebug) {
+			System.out.println("errorCode -> " + errorCode);
+			
+			int nextLine = 0;
+			
+			for (int i = 0; i < employeeRecordsData.size(); i++) {
+				System.out.print(employeeRecordsData.get(i) + " // ");
+				
+				if (i - 4 == nextLine) {
+					nextLine = i;
+					System.out.println();
+				}
+			}
+
+			System.out.println("------------------------------------------------------------------------------------------");
+		}
 	}
 }
 
 /**	Developer Notes:
  * 
  * Code structure is similar to that of A11 (Evan's version).
+ * 
+ * [Error Code Info]
+ * 
+ * [ArrayList Design]
+ *  ArrayList data order is as follows...
+ *  1 --> firstNameIn + lastNameIn
+ *  2 --> employeeIDNumber
+ *  3 --> annualSalaryIn
+ *  4 --> startDateIn
  * 
  */
