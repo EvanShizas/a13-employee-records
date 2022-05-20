@@ -52,15 +52,15 @@ public class Employee extends JFrame {
 	private JButton sort;
 	private JSpinner.DateEditor dateEdit;
 	private JTable listEmployeeRecordsDataTable;
-	
-	ArrayList <String> employeeRecordsData = new ArrayList <String>();
-	
+
+	ArrayList<String> employeeRecordsData = new ArrayList<String>();
+
 	String firstLastName, employeeID, annualSalary, startDate;
-	
+
 	int errorCode = 0;
-	
+
 	boolean allowDebug = false;
-	
+
 	Date today = new Date();
 
 	public static void main(String[] args) {
@@ -87,7 +87,7 @@ public class Employee extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JLabel lblEmployeeRecords = new JLabel("Employee Records");
 		lblEmployeeRecords.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEmployeeRecords.setForeground(Color.BLUE);
@@ -95,7 +95,7 @@ public class Employee extends JFrame {
 		lblEmployeeRecords.setBackground(Color.WHITE);
 		lblEmployeeRecords.setBounds(0, 0, 833, 41);
 		contentPane.add(lblEmployeeRecords);
-		
+
 		JLabel firstName = new JLabel("First Name:");
 		firstName.setBounds(10, 85, 85, 22);
 		contentPane.add(firstName);
@@ -103,12 +103,12 @@ public class Employee extends JFrame {
 		JLabel lastName = new JLabel("Last Name:");
 		lastName.setBounds(10, 117, 80, 22);
 		contentPane.add(lastName);
-		
+
 		JLabel employeeIdNumberLbl = new JLabel("Employee #:");
 		employeeIdNumberLbl.setBackground(Color.WHITE);
 		employeeIdNumberLbl.setBounds(10, 149, 80, 22);
 		contentPane.add(employeeIdNumberLbl);
-		
+
 		JLabel annualSalaryLbl = new JLabel("Salary ($):");
 		annualSalaryLbl.setBackground(Color.WHITE);
 		annualSalaryLbl.setBounds(10, 180, 78, 22);
@@ -117,19 +117,19 @@ public class Employee extends JFrame {
 		JLabel startDateLbl = new JLabel("Start Date:");
 		startDateLbl.setBounds(10, 212, 78, 22);
 		contentPane.add(startDateLbl);
-		
+
 		JLabel enterBelowLabel = new JLabel("Enter Information Below:");
 		enterBelowLabel.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		enterBelowLabel.setBounds(10, 55, 229, 20);
 		contentPane.add(enterBelowLabel);
-		
+
 		JLabel dateStructureLbl = new JLabel("mm/dd/yyyy");
 		dateStructureLbl.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		dateStructureLbl.setHorizontalAlignment(SwingConstants.LEFT);
 		dateStructureLbl.setBackground(Color.WHITE);
 		dateStructureLbl.setBounds(95, 232, 144, 22);
 		contentPane.add(dateStructureLbl);
-		
+
 		annualSalaryIn = new JTextField();
 		annualSalaryIn.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		annualSalaryIn.setHorizontalAlignment(SwingConstants.LEFT);
@@ -143,10 +143,10 @@ public class Employee extends JFrame {
 		startDateIn.setBackground(Color.WHITE);
 		startDateIn.setBounds(95, 212, 144, 22);
 		contentPane.add(startDateIn);
-		
+
 		dateEdit = new JSpinner.DateEditor(startDateIn, "MM/dd/yyyy");
 		startDateIn.setEditor(dateEdit);
-		
+
 		firstNameIn = new JTextField();
 		firstNameIn.setBounds(95, 85, 144, 22);
 		contentPane.add(firstNameIn);
@@ -163,7 +163,7 @@ public class Employee extends JFrame {
 		employeeIDNumber.setBackground(Color.WHITE);
 		employeeIDNumber.setBounds(95, 149, 144, 22);
 		contentPane.add(employeeIDNumber);
-		
+
 		add = new JButton("Add");
 		add.setBounds(10, 265, 110, 23);
 		contentPane.add(add);
@@ -174,7 +174,6 @@ public class Employee extends JFrame {
 		});
 
 		remove = new JButton("Remove");
-		remove.setEnabled(false);
 		remove.setBounds(129, 265, 110, 23);
 		contentPane.add(remove);
 		remove.addActionListener(new java.awt.event.ActionListener() {
@@ -219,114 +218,207 @@ public class Employee extends JFrame {
 		dialogBox.setBounds(250, 55, 573, 22);
 		contentPane.add(dialogBox);
 		dialogBox.setColumns(10);
-		
-		listEmployeeRecordsDataTable = new JTable();
+
+		DefaultTableModel tableModel = new DefaultTableModel();
+		tableModel.addColumn("Employee #"); // tweak size to be smaller
+		tableModel.addColumn("Name");
+		tableModel.addColumn("Salary");
+		tableModel.addColumn("Start Date");
+		listEmployeeRecordsDataTable = new JTable(tableModel);
 		listEmployeeRecordsDataTable.setEnabled(false);
 		listEmployeeRecordsDataTable.setRowSelectionAllowed(false);
 		listEmployeeRecordsDataTable.getTableHeader().setReorderingAllowed(false);
-		listEmployeeRecordsDataTable.setModel(new DefaultTableModel(
-			new Object[][] {
-				{"334040532", "Evan Shizas", "$100,000", "02/10/2004"},
-			},
-			new String[] {
-				"Employee #", "Name", "Salary", "Start Date"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class, String.class, String.class, String.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
 		listEmployeeRecordsDataTable.setBounds(72, 190, 56, 23);
 		contentPane.add(listEmployeeRecordsDataTable);
+
+		/*
+		 * new Object[][] { { "334040532", "Evan Shizas", "$100,000", "02/10/2004" }, },
+		 * new String[] { "Employee #", "Name", "Salary", "Start Date" }) { Class[]
+		 * columnTypes = new Class[] { String.class, String.class, String.class,
+		 * String.class };
+		 * 
+		 * public Class getColumnClass(int columnIndex) { return
+		 * columnTypes[columnIndex]; } }
+		 */
 
 		scrollListEmployeeDataTable = new JScrollPane(listEmployeeRecordsDataTable);
 		scrollListEmployeeDataTable.setBounds(250, 85, 573, 306);
 		scrollListEmployeeDataTable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		contentPane.add(scrollListEmployeeDataTable);
-		
+
 		debugConsole();
 	}
-	
+
 	private void resetActionPerformed(java.awt.event.ActionEvent evt) {
-		int confirmOption = JOptionPane.showConfirmDialog (null, "All data will be lost!\n\nWish to continue?","RESET WARNING", JOptionPane.YES_NO_OPTION);
+		int confirmOption = JOptionPane.showConfirmDialog(null, "All data will be lost!\n\nWish to continue?",
+				"RESET WARNING", JOptionPane.YES_NO_OPTION);
 
 		if (confirmOption == JOptionPane.YES_OPTION) {
 			employeeRecordsData.clear();
 		}
-		
+
 		debugConsole();
 	}
-	
+
 	private void addActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		if (!validInput()) {
+			errorResponse();
+		} else { // no.
+			employeeRecordsData.add(firstNameIn.getText() + " " + lastNameIn.getText());
+			employeeRecordsData.add(employeeIDNumber.getValue().toString()); // auto increment/choose?
+			employeeRecordsData.add(annualSalaryIn.getText());
+			employeeRecordsData.add(startDateIn.getValue().toString());
+			
+			DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel(); // placeholder var names, ples change
+			int dataLength = employeeRecordsData.size(); // placeholder for test
+			tableModel.addRow(new Object[]{ employeeRecordsData.get(dataLength - 3), employeeRecordsData.get(dataLength - 4), employeeRecordsData.get(dataLength - 2), employeeRecordsData.get(dataLength - 1) });
+		}
+
 		debugConsole();
 	}
-	
+
 	private void removeActionPerformed(java.awt.event.ActionEvent evt) {
+		DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel();
+		int dataLength = employeeRecordsData.size();
 		
-		debugConsole();
+		for (int i = 0; i < employeeRecordsData.size(); i++) {
+			if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString()) {
+				tableModel.removeRow(listEmployeeRecordsDataTable.getRowCount() - 1);
+			}
+		}
+		
+		// currently does not work due to room temp iq; will review
+		if (!validInput()) {
+			errorResponse();
+		} else {
+			for (int i = 0; i < employeeRecordsData.size(); i += 4) {
+				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) { // check for double id
+					for (int j = i; j < i + 4; j++) { // use a constant
+						employeeRecordsData.remove(j + 1); // idk if this works
+						
+					}
+				}
+			}
+		}
+
+		debugConsole(); // not my problem to test
 	}
-	
+
 	private void updateActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		if (!validInput()) {
+			errorResponse();
+		} else {
+			for (int i = 1; i < employeeRecordsData.size(); i += 4) {
+				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
+					if (employeeRecordsData.get(i - 1).equals(firstNameIn + " " + lastNameIn)) {
+						employeeRecordsData.set(i + 1, annualSalaryIn.getText());
+						employeeRecordsData.set(i + 2, startDateIn.getValue().toString());
+					}
+				}
+			}
+		}
+
 		debugConsole();
 	}
-	
+
 	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		if (!validInput()) {
+			errorResponse();
+		} else {
+			for (int i = 1; i < employeeRecordsData.size(); i += 4) {
+				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) { // checks input is in
+																									// records
+					// sortedList.add(employeeRecordsData.get(i)); // make a better variable name
+				}
+			}
+
+			// display sorted list with its associated data
+		}
+
 		debugConsole();
 	}
-	
+
 	public boolean validInput() {
-		return false;
+		boolean valid;
+
+		// check for blank fields
+		if (firstNameIn.getText().equals("")) {
+			valid = false;
+		} else if (lastNameIn.getText().equals("")) {
+			valid = false;
+		} else if (annualSalaryIn.getText().equals("")) {
+			valid = false;
+		} else {
+			valid = true;
+		}
+
+		// Checks each character to verify that there are only letters.
+		for (int i = 0; i < firstNameIn.getText().length(); i++) {
+			if (firstNameIn.getText().charAt(i) < 97 || firstNameIn.getText().charAt(i) > 122) {
+				errorCode = 4;
+				return false;
+			}
+		}
+
+		// Checks each character to verify that there are only letters.
+		for (int i = 0; i < lastNameIn.getText().length(); i++) {
+			if (lastNameIn.getText().charAt(i) < 97 || lastNameIn.getText().charAt(i) > 122) {
+				errorCode = 3;
+				valid = false;
+			}
+		}
+
+		// check only numbers are used in salary
+		try {
+			Integer.parseInt(annualSalaryIn.getText());
+		} catch (Exception e) {
+			valid = false; // idk if this works out
+		}
+
+		return valid;
 	}
-	
+
 	public void arrayInitialize() { // Only needed if a 2D array is being done
-		
+
 	}
-	
+
 	public void arrayWriteOut() { // Produces text in the GUI
-		
+
 	}
-	
+
 	public void errorResponse() {
-		
+
 	}
-	
-	public void debugConsole() {
+
+	public void debugConsole() { // we should remove debug console according to mr.so
 		if (allowDebug) {
 			System.out.println("errorCode -> " + errorCode);
-			
+
 			int nextLine = 0;
-			
+
 			for (int i = 0; i < employeeRecordsData.size(); i++) {
 				System.out.print(employeeRecordsData.get(i) + " // ");
-				
+
 				if (i - 4 == nextLine) {
 					nextLine = i;
 					System.out.println();
 				}
 			}
 
-			System.out.println("------------------------------------------------------------------------------------------");
+			System.out.println(
+					"------------------------------------------------------------------------------------------");
 		}
 	}
 }
 
-/**	Developer Notes:
+/**
+ * Developer Notes:
  * 
  * Code structure is similar to that of A11 (Evan's version).
  * 
  * [Error Code Info]
  * 
- * [ArrayList Design]
- *  ArrayList data order is as follows...
- *  1 --> firstNameIn + lastNameIn
- *  2 --> employeeIDNumber
- *  3 --> annualSalaryIn
- *  4 --> startDateIn
+ * [ArrayList Design] ArrayList data order is as follows... 1 --> firstNameIn +
+ * lastNameIn 2 --> employeeIDNumber 3 --> annualSalaryIn 4 --> startDateIn
  * 
  */
