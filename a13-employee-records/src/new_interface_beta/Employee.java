@@ -1,4 +1,3 @@
-package new_interface_beta; // Beta version of the new GUI!!!!!
 
 /**
  * Stores and lists employee names, IDs, salary, and start date in an ArrayList.
@@ -183,7 +182,6 @@ public class Employee extends JFrame {
 		});
 
 		update = new JButton("Update");
-		update.setEnabled(false);
 		update.setBounds(11, 299, 228, 23);
 		contentPane.add(update);
 		update.addActionListener(new java.awt.event.ActionListener() {
@@ -193,7 +191,6 @@ public class Employee extends JFrame {
 		});
 
 		sort = new JButton("Sort");
-		sort.setEnabled(false);
 		sort.setBounds(11, 333, 228, 23);
 		contentPane.add(sort);
 		sort.addActionListener(new java.awt.event.ActionListener() {
@@ -282,8 +279,10 @@ public class Employee extends JFrame {
 		int dataLength = employeeRecordsData.size();
 		
 		for (int i = 0; i < employeeRecordsData.size(); i++) {
-			if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString()) {
-				tableModel.removeRow(listEmployeeRecordsDataTable.getRowCount() - 1);
+			if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
+				if (listEmployeeRecordsDataTable.getRowCount() > 0) {
+					tableModel.removeRow(employeeRecordsData.indexOf(employeeRecordsData.get(i)) % 4 - 1); // fix remove code; removes too many
+				} // % 4 - 1 system will always target same value
 			}
 		}
 		
@@ -325,14 +324,42 @@ public class Employee extends JFrame {
 		if (!validInput()) {
 			errorResponse();
 		} else {
-			for (int i = 1; i < employeeRecordsData.size(); i += 4) {
+			for (int i = 1; i < employeeRecordsData.size() / 4; i += 4) {
 				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) { // checks input is in
 																									// records
+					
 					// sortedList.add(employeeRecordsData.get(i)); // make a better variable name
+					ArrayList<Integer> sortedList = new ArrayList<Integer>();
+					
+					for (int j = 1; j < employeeRecordsData.size() / 4; j += 4) {
+						sortedList.add(Integer.valueOf(employeeRecordsData.get(j)));
+					}
+					
+					int temp;
+					int counter = 1;
+					while (counter > 0) {
+						counter = 0;
+						for (int n = 1; n < employeeRecordsData.size() / 4; n += 4) {
+							if (sortedList.get(n) > sortedList.get(n + 4)) {
+								temp = sortedList.get(n);
+								sortedList.set(n, sortedList.get(n + 4));
+								sortedList.set(n + 4, temp);
+								counter++;
+							}
+						}
+					}
 				}
 			}
 
-			// display sorted list with its associated data
+			DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel();
+			for (int i = 0; i < employeeRecordsData.size(); i++) {
+				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
+					if (listEmployeeRecordsDataTable.getRowCount() > 0) {
+						tableModel.removeRow(listEmployeeRecordsDataTable.getRowCount() - 1); // fix remove code; removes doubles on 0 and 1 ID
+						// tableModel.insertRow // use index to replace removed
+					}
+				}
+			}
 		}
 
 		debugConsole();
