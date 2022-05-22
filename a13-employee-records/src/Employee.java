@@ -53,16 +53,13 @@ public class Employee extends JFrame {
 	private JSpinner.DateEditor dateEdit;
 	private JTable listEmployeeRecordsDataTable;
 
+	final int MAX_INT = 2147483646;
+	final int MIN_INT = 0;
 	final int MAX_ID_RANGE = 400000000;
-
 	ArrayList <String> employeeRecordsData = new ArrayList <String>();
-
 	String firstLastName, employeeID, annualSalary, startDate, calDate;
-
 	int employeeCount = 0, errorCode = 0;
-
 	boolean removePress = false, updatePress = false, sortPress = false;
-
 	Date today = new Date();
 
 	public static void main(String[] args) {
@@ -279,8 +276,9 @@ public class Employee extends JFrame {
 
 			dialogBox.setText("SUCCESSFULLY ADDED EMPLOYEE AND INFORMATION!");
 
-			if (employeeCount == 1)
+			if (employeeCount == 1) {
 				sort.setEnabled(true);
+			}
 			if (employeeCount == 0) {
 				remove.setEnabled(true);
 				update.setEnabled(true);
@@ -288,12 +286,7 @@ public class Employee extends JFrame {
 
 			employeeRecordsData.add(employeeIDNumber.getValue().toString());
 			employeeRecordsData.add(firstNameIn.getText() + " " + lastNameIn.getText());
-			
-			if (annualSalaryIn.getText().equals(""))
-				employeeRecordsData.add("N/A");
-			else
-				employeeRecordsData.add("$" + annualSalaryIn.getText());
-			
+			employeeRecordsData.add("$" + annualSalaryIn.getText());
 			employeeRecordsData.add(calDate);
 
 			employeeCount++;
@@ -319,9 +312,10 @@ public class Employee extends JFrame {
 			if (employeeRemove.equals("0")) { // Removes the most recent entry if no specific employee ID is selected.
 				dialogBox.setText("REMOVING MOST RECENT ENTRY...");
 
-				if (sortPress)
+				if (sortPress) {
 					dialogBox.setText("REMOVING MOST RECENT EMPLOYEE...");
-				
+				}
+					
 				employeeRecordsData.remove(employeeRecordsData.size() - 1);
 				employeeRecordsData.remove(employeeRecordsData.size() - 1);
 				employeeRecordsData.remove(employeeRecordsData.size() - 1);
@@ -368,7 +362,6 @@ public class Employee extends JFrame {
 		startDateIn.setModel(new SpinnerDateModel(today, null, today, Calendar.MONTH));
 		dateEdit = new JSpinner.DateEditor(startDateIn, "MM/dd/yyyy");
 		startDateIn.setEditor(dateEdit);
-		annualSalaryIn.setText("");
 		employeeIDNumber.setValue(0);
 		
 		removePress = false;
@@ -392,7 +385,7 @@ public class Employee extends JFrame {
 
 			for (int i = 0; i < employeeRecordsData.size(); i++) {
 				if (employeeRecordsData.get(i).equals(employeeUpdate)) {
-					employeeRecordsData.set(i + 2, annualSalaryIn.getText());
+					employeeRecordsData.set(i + 2, "$" + annualSalaryIn.getText());
 					employeeRecordsData.set(i + 3, calDate);
 
 					matchID = true;
@@ -451,7 +444,6 @@ public class Employee extends JFrame {
 		startDateIn.setModel(new SpinnerDateModel(today, null, today, Calendar.MONTH));
 		dateEdit = new JSpinner.DateEditor(startDateIn, "MM/dd/yyyy");
 		startDateIn.setEditor(dateEdit);
-		annualSalaryIn.setText("");
 		employeeIDNumber.setValue(0);
 
 		tableWriteOut();
@@ -459,7 +451,7 @@ public class Employee extends JFrame {
 
 	public boolean validInput() {
 		try {
-			boolean skip = false, uniqueRandomID = false;
+			boolean uniqueRandomID = false;
 
 			errorCode = 7; // If try{} fails at parsing String values.
 
@@ -475,11 +467,11 @@ public class Employee extends JFrame {
 			   They are counted as N/A and have no value. */
 
 			if (annualSalaryIn.getText().equals("")) {
-				skip = true;
+				errorCode = 10;
+				return false;
 			}
 
 			else {
-				skip = false;
 				testIn1 = Double.parseDouble(annualSalaryIn.getText());
 			}
 
@@ -543,7 +535,7 @@ public class Employee extends JFrame {
 			/* Next if-else statement check if values are real numbers.
 			   If not between 0 & 2147483646, produces an error statement in dialogBox. */
 
-			if (testIn1 > 2147483646 || testIn1 < 0 && !skip) {
+			if (testIn1 > MAX_INT || testIn1 < MIN_INT) {
 				errorCode = 1;
 				return false;
 			}
@@ -627,6 +619,10 @@ public class Employee extends JFrame {
 
 		else if (errorCode == 9) {
 			dialogBox.setText("ERROR: NO MORE THAN 2 DECIMAL NUMBERS IN SALARY ENTRY! TRY AGAIN!");
+		}
+		
+		else if (errorCode == 10) {
+			dialogBox.setText("ERROR: MUST HAVE A SALARY! NO LETTERS OR SPECIAL CHARACTERS!");
 		}
 
 		else {
