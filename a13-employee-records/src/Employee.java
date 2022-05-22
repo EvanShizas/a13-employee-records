@@ -349,8 +349,9 @@ public class Employee extends JFrame {
 			if (matchID || employeeRemove.equals("0")) {
 				employeeCount--;
 
-				if (employeeCount == 1)
+				if (employeeCount == 1) {
 					sort.setEnabled(false);
+				}
 				if (employeeCount == 0) {
 					remove.setEnabled(false);
 					update.setEnabled(false);
@@ -379,7 +380,10 @@ public class Employee extends JFrame {
 		else {	
 			boolean matchID = false;
 
-			String employeeUpdate = employeeIDNumber.getValue().toString();;
+			String employeeUpdate = employeeIDNumber.getValue().toString();
+			
+			calDate = startDateIn.getValue().toString();
+			calDate = calDate.substring(4, 10) + "," + calDate.substring(23, 28);
 
 			dialogBox.setText("UPDATING EMPLOYEE ENTRY...");
 
@@ -403,6 +407,9 @@ public class Employee extends JFrame {
 
 		updatePress = false;
 
+		startDateIn.setModel(new SpinnerDateModel(today, null, today, Calendar.MONTH));
+		dateEdit = new JSpinner.DateEditor(startDateIn, "MM/dd/yyyy");
+		startDateIn.setEditor(dateEdit);
 		employeeIDNumber.setValue(0);
 
 		tableWriteOut();
@@ -655,12 +662,13 @@ public class Employee extends JFrame {
  * 	7 -> invalid String inputs
  * 	8 -> no matching employee ID
  * 	9 -> excess decimal values present in salary entry
+ * 	10 -> empty annualSalaryIn; not allowed
  * 
  * [ArrayList Design]
  *  employeeRecordsData data order is as follows...
- *  1 --> employeeIDNumber
- *  2 --> firstNameIn + lastNameIn
- *  3 --> annualSalaryIn
- *  4 --> startDateIn
+ * 	1 --> employeeIDNumber
+ * 	2 --> firstNameIn + lastNameIn
+ * 	3 --> annualSalaryIn
+ * 	4 --> startDateIn
  * 
  */
