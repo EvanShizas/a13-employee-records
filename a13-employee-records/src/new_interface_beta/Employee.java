@@ -1,3 +1,4 @@
+package new_interface_beta;
 
 /**
  * Stores and lists employee names, IDs, salary, and start date in an ArrayList.
@@ -52,8 +53,11 @@ public class Employee extends JFrame {
 	private JSpinner.DateEditor dateEdit;
 	private JTable listEmployeeRecordsDataTable;
 
-	ArrayList<String> employeeRecordsData = new ArrayList<String>();
-
+	ArrayList<String> nameData = new ArrayList<String>();
+	ArrayList<String> idData = new ArrayList<String>();
+	ArrayList<Integer> salaryData = new ArrayList<Integer>();
+	ArrayList<String> dateData = new ArrayList<String>();
+	
 	String firstLastName, employeeID, annualSalary, startDate;
 
 	int errorCode = 0;
@@ -242,8 +246,6 @@ public class Employee extends JFrame {
 		scrollListEmployeeDataTable.setBounds(250, 85, 573, 306);
 		scrollListEmployeeDataTable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		contentPane.add(scrollListEmployeeDataTable);
-
-		debugConsole();
 	}
 
 	private void resetActionPerformed(java.awt.event.ActionEvent evt) {
@@ -251,118 +253,142 @@ public class Employee extends JFrame {
 				"RESET WARNING", JOptionPane.YES_NO_OPTION);
 
 		if (confirmOption == JOptionPane.YES_OPTION) {
-			employeeRecordsData.clear();
+			nameData.clear();
+			idData.clear();
+			salaryData.clear();
+			dateData.clear();
 		}
-
-		debugConsole();
 	}
 
 	private void addActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!validInput()) {
 			errorResponse();
-		} else { // no.
-			employeeRecordsData.add(firstNameIn.getText() + " " + lastNameIn.getText());
-			employeeRecordsData.add(employeeIDNumber.getValue().toString()); // auto increment/choose?
-			employeeRecordsData.add(annualSalaryIn.getText());
-			employeeRecordsData.add(startDateIn.getValue().toString());
+		} else {
+			nameData.add(firstNameIn.getText() + " " + lastNameIn.getText());
+			idData.add(employeeIDNumber.getValue().toString()); // auto increment/choose?
+			salaryData.add(Integer.valueOf(annualSalaryIn.getText()));
+			dateData.add(startDateIn.getValue().toString());
 			
-			DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel(); // placeholder var names, ples change
-			int dataLength = employeeRecordsData.size(); // placeholder for test
-			tableModel.addRow(new Object[]{ employeeRecordsData.get(dataLength - 3), employeeRecordsData.get(dataLength - 4), employeeRecordsData.get(dataLength - 2), employeeRecordsData.get(dataLength - 1) });
+			DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel(); 
+			tableModel.addRow(new Object[]{ idData.get(idData.size() - 1), nameData.get(nameData.size() - 1), salaryData.get(salaryData.size() - 1), dateData.get(dateData.size() - 1) });
 		}
-
-		debugConsole();
 	}
 
 	private void removeActionPerformed(java.awt.event.ActionEvent evt) {
 		DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel();
-		int dataLength = employeeRecordsData.size();
-		
-		for (int i = 0; i < employeeRecordsData.size(); i++) {
-			if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
+
+		for (int i = 0; i < idData.size(); i++) {
+			if (idData.get(i).equals(employeeIDNumber.getValue().toString())) {
 				if (listEmployeeRecordsDataTable.getRowCount() > 0) {
-					tableModel.removeRow(employeeRecordsData.indexOf(employeeRecordsData.get(i)) % 4 - 1); // fix remove code; removes too many
-				} // % 4 - 1 system will always target same value
+					tableModel.removeRow(idData.indexOf(idData.get(i)));
+				} 
 			}
 		}
 		
-		// currently does not work due to room temp iq; will review
 		if (!validInput()) {
 			errorResponse();
 		} else {
-			for (int i = 0; i < employeeRecordsData.size(); i += 4) {
-				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) { // check for double id
-					for (int j = i; j < i + 4; j++) { // use a constant
-						employeeRecordsData.remove(j + 1); // idk if this works
-						
+			for (int i = 0; i < idData.size() - 1; i++) { // needs error check against invalid targets
+				if (i < idData.size() - 1) { 
+					if (idData.get(i).equals(employeeIDNumber.getValue().toString())) { // needs to check for unique id
+						if (listEmployeeRecordsDataTable.getRowCount() > 0) {
+							nameData.remove(i);
+							idData.remove(i); 
+							salaryData.remove(i);
+							dateData.remove(i);
+							
+							System.out.println(idData.size());
+							
+							tableModel.removeRow(idData.indexOf(idData.get(i)));
+						}
 					}
+				} else {
+					// write code to prevent out of bounds explosion
 				}
 			}
 		}
-
-		debugConsole(); // not my problem to test
 	}
 
 	private void updateActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!validInput()) {
 			errorResponse();
 		} else {
-			for (int i = 1; i < employeeRecordsData.size(); i += 4) {
-				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
-					if (employeeRecordsData.get(i - 1).equals(firstNameIn + " " + lastNameIn)) {
-						employeeRecordsData.set(i + 1, annualSalaryIn.getText());
-						employeeRecordsData.set(i + 2, startDateIn.getValue().toString());
+			for (int i = 0; i < idData.size(); i++) {
+				if (idData.get(i).equals(employeeIDNumber.getValue().toString())) {
+					if (nameData.get(i).equals(firstNameIn + " " + lastNameIn)) {
+						salaryData.set(i, Integer.parseInt(annualSalaryIn.getText()));
+						dateData.set(i, startDateIn.getValue().toString());
 					}
 				}
 			}
 		}
-
-		debugConsole();
 	}
 
 	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!validInput()) {
 			errorResponse();
 		} else {
-			for (int i = 1; i < employeeRecordsData.size() / 4; i += 4) {
-				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) { // checks input is in
-																									// records
+			ArrayList<String> sortedName = new ArrayList<String>();
+			ArrayList<String> sortedID = new ArrayList<String>();
+			ArrayList<Integer> sortedSalary = new ArrayList<Integer>();
+			ArrayList<String> sortedDate = new ArrayList<String>();
+			
+			sortedName = (ArrayList<String>)nameData.clone();
+			sortedID = (ArrayList<String>)idData.clone();
+			sortedSalary = (ArrayList<Integer>)salaryData.clone();
+			sortedDate = (ArrayList<String>)dateData.clone();
+			
+			for (int i = 0; i < idData.size(); i++) {
+				if (idData.get(i).equals(employeeIDNumber.getValue().toString())) {
+					String tempName;
+					String tempID;
+					int tempSalary;
+					String tempDate;
 					
-					// sortedList.add(employeeRecordsData.get(i)); // make a better variable name
-					ArrayList<Integer> sortedList = new ArrayList<Integer>();
-					
-					for (int j = 1; j < employeeRecordsData.size() / 4; j += 4) {
-						sortedList.add(Integer.valueOf(employeeRecordsData.get(j)));
-					}
-					
-					int temp;
 					int counter = 1;
 					while (counter > 0) {
 						counter = 0;
-						for (int n = 1; n < employeeRecordsData.size() / 4; n += 4) {
-							if (sortedList.get(n) > sortedList.get(n + 4)) {
-								temp = sortedList.get(n);
-								sortedList.set(n, sortedList.get(n + 4));
-								sortedList.set(n + 4, temp);
-								counter++;
+						for (int n = 0; n < idData.size(); n++) {
+							if (n + 1 < idData.size()) {
+								if (Integer.valueOf(sortedID.get(n)) > Integer.valueOf(sortedID.get(n + 1))) {
+									tempName = sortedName.get(n);
+									tempID = sortedID.get(n);
+									tempSalary = sortedSalary.get(n);
+									tempDate = sortedDate.get(n);
+									
+									sortedName.set(n, sortedName.get(n + 1));
+									sortedID.set(n, sortedID.get(n + 1));
+									sortedSalary.set(n, sortedSalary.get(n + 1));
+									sortedDate.set(n, sortedDate.get(n + 1));
+									
+									sortedName.set(n + 1, tempName);
+									sortedID.set(n + 1, tempID);
+									sortedSalary.set(n + 1, tempSalary);
+									sortedDate.set(n + 1, tempDate);
+									
+									counter++;
+								}
 							}
 						}
 					}
+					
+					nameData = sortedName;
+					idData = sortedID;
+					salaryData = sortedSalary;
+					dateData = sortedDate;
 				}
 			}
 
 			DefaultTableModel tableModel = (DefaultTableModel)listEmployeeRecordsDataTable.getModel();
-			for (int i = 0; i < employeeRecordsData.size(); i++) {
-				if (employeeRecordsData.get(i).equals(employeeIDNumber.getValue().toString())) {
+			for (int i = 0; i < sortedID.size(); i++) {
+				if (sortedID.get(i).equals(employeeIDNumber.getValue().toString())) {
 					if (listEmployeeRecordsDataTable.getRowCount() > 0) {
-						tableModel.removeRow(listEmployeeRecordsDataTable.getRowCount() - 1); // fix remove code; removes doubles on 0 and 1 ID
-						// tableModel.insertRow // use index to replace removed
+						tableModel.removeRow(i); // fix remove code; removes doubles on 0 and 1 ID
+						tableModel.insertRow(i, new Object[]{ sortedID.get(i), nameData.get(nameData.size() - 1), salaryData.get(salaryData.size() - 1), dateData.get(dateData.size() - 1) });
 					}
 				}
 			}
 		}
-
-		debugConsole();
 	}
 
 	public boolean validInput() {
@@ -415,26 +441,6 @@ public class Employee extends JFrame {
 
 	public void errorResponse() {
 
-	}
-
-	public void debugConsole() { // we should remove debug console according to mr.so
-		if (allowDebug) {
-			System.out.println("errorCode -> " + errorCode);
-
-			int nextLine = 0;
-
-			for (int i = 0; i < employeeRecordsData.size(); i++) {
-				System.out.print(employeeRecordsData.get(i) + " // ");
-
-				if (i - 4 == nextLine) {
-					nextLine = i;
-					System.out.println();
-				}
-			}
-
-			System.out.println(
-					"------------------------------------------------------------------------------------------");
-		}
 	}
 }
 
