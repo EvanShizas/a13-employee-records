@@ -1,3 +1,5 @@
+package debug_menu;
+
 /**
  * Stores and lists employee names, IDs, salary, and start date in an ArrayList.
  * 
@@ -61,7 +63,7 @@ public class Employee extends JFrame {
 
 	int employeeCount = 0, errorCode = 0;
 
-	boolean removePress = false, updatePress = false, sortPress = false;
+	boolean removePress = false, updatePress = false, sortPress = false, allowDebug = false;
 
 	Date today = new Date();
 
@@ -266,6 +268,8 @@ public class Employee extends JFrame {
 			
 			tableInitialize();
 		}
+
+		debugConsole();
 	}
 
 	private void addActionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,6 +306,8 @@ public class Employee extends JFrame {
 		}
 
 		tableWriteOut();
+
+		debugConsole();
 	}
 
 	private void removeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -374,6 +380,8 @@ public class Employee extends JFrame {
 		removePress = false;
 
 		tableWriteOut();
+
+		debugConsole();
 	}
 
 	private void updateActionPerformed(java.awt.event.ActionEvent evt) {
@@ -413,6 +421,8 @@ public class Employee extends JFrame {
 		employeeIDNumber.setValue(0);
 
 		tableWriteOut();
+
+		debugConsole();
 	}
 
 	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
@@ -455,6 +465,8 @@ public class Employee extends JFrame {
 		employeeIDNumber.setValue(0);
 
 		tableWriteOut();
+
+		debugConsole();
 	}
 
 	public boolean validInput() {
@@ -640,6 +652,29 @@ public class Employee extends JFrame {
 			annualSalaryIn.setEnabled(false);
 			startDateIn.setEnabled(false);
 			employeeIDNumber.setEnabled(false);
+		}
+	}
+
+	public void debugConsole() {
+		if (allowDebug) {
+			System.out.println("employeeCount -> " + employeeCount);
+			System.out.println("sortPress -> " + sortPress);
+			System.out.println("errorCode -> " + errorCode);
+			System.out.println();
+
+			int nextLine = 0;
+
+			for (int i = 0; i < employeeRecordsData.size(); i++) {				
+				if (i - 4 == nextLine) {
+					nextLine = i;
+					System.out.println();
+				}
+
+				System.out.print(employeeRecordsData.get(i) + " // ");
+			}
+
+			System.out.println();
+			System.out.println("------------------------------------------------------------------------------------------");
 		}
 	}
 }
