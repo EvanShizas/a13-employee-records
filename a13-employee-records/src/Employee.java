@@ -1,5 +1,5 @@
 /**
- * Stores and lists employee names, IDs, salary, and start date in an ArrayList. 
+ * Stores and lists employee names, IDs, salary, and start date in an ArrayList.
  * 
  * modified     20220520
  * date         20220512
